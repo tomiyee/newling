@@ -1,14 +1,49 @@
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import {
+  currentFlashcardSetIdAtom,
+  FlashcardSet,
+  flashcardSetsAtom,
+} from '../../recoil/flashcards';
 
-const FlashcardsScreen = () => {
-  const data = ['Flashcards 1', 'Flashcards 2'];
+type FlashcardItemProps = {
+  flashcardSet: FlashcardSet;
+  onPress: () => void;
+};
+
+const FlashcardItem = ({ flashcardSet, onPress }: FlashcardItemProps) => {
+  return (
+    <TouchableOpacity onPress={onPress} style={[styles.item]}>
+      <Text>{flashcardSet.name}</Text>
+    </TouchableOpacity>
+  );
+};
+
+const FlashcardsScreen = ({ navigation }) => {
+  const flashcardSets = useRecoilValue(flashcardSetsAtom);
+  const setCurrentFlashcardSetID = useSetRecoilState(currentFlashcardSetIdAtom);
 
   return (
     <View>
       <FlatList
-        data={data}
-        renderItem={({ item }) => <Text style={styles.item}>{item}</Text>}
-        keyExtractor={(item) => item}
+        data={flashcardSets}
+        renderItem={({ item }) => (
+          <FlashcardItem
+            onPress={() => {
+              setCurrentFlashcardSetID(item.id);
+              navigation.navigate('Practice');
+            }}
+            flashcardSet={item}
+          />
+        )}
+        keyExtractor={(item) => item.id}
       />
     </View>
   );
