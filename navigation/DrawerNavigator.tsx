@@ -1,28 +1,29 @@
-import { Button } from 'react-native';
-import FlashcardsStackScreen from './FlashcardStack';
-import TracksStackScreen from './TracksStack';
+
+import FlashcardsScreen from '../Screens/Flashcards/Flashcards';
+import TracksScreen from '../Screens/Tracks/Tracks';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import { IconButton } from 'react-native-paper';
 
 const Drawer = createDrawerNavigator();
 
-const DrawerNavigator = () => {
+const DrawerNavigator = ({navigation}) => {
   return (
     <Drawer.Navigator initialRouteName="Flashcards">
       <Drawer.Screen
         name="Flashcards"
-        component={FlashcardsStackScreen}
+        component={FlashcardsScreen}
         options={{
           headerRight: () => (
-            <Button onPress={() => alert('This is a button!')} title="+" />
+            <IconButton onPress={() => navigation.navigate("FlashcardWriter")} icon="plus"/>
           ),
         }}
       />
       <Drawer.Screen
         name="Tracks"
-        component={TracksStackScreen}
+        component={TracksScreen}
         options={{
           headerRight: () => (
-            <Button onPress={() => alert('This is a button!')} title="+" />
+            <IconButton onPress={() => navigation.navigate("TrackWriter")} icon="plus" />
           ),
         }}
       />
