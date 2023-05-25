@@ -1,4 +1,3 @@
-
 import FlashcardsScreen from '../Screens/Flashcards/Flashcards';
 import TracksScreen from '../Screens/Tracks/Tracks';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -6,7 +5,7 @@ import { IconButton } from 'react-native-paper';
 
 const Drawer = createDrawerNavigator();
 
-const DrawerNavigator = ({navigation}) => {
+const DrawerNavigator = ({ navigation }) => {
   return (
     <Drawer.Navigator initialRouteName="Flashcards">
       <Drawer.Screen
@@ -14,7 +13,10 @@ const DrawerNavigator = ({navigation}) => {
         component={FlashcardsScreen}
         options={{
           headerRight: () => (
-            <IconButton onPress={() => navigation.navigate("FlashcardWriter")} icon="plus"/>
+            <IconButton
+              onPress={() => navigation.navigate('FlashcardWriter')}
+              icon="plus"
+            />
           ),
         }}
       />
@@ -23,7 +25,10 @@ const DrawerNavigator = ({navigation}) => {
         component={TracksScreen}
         options={{
           headerRight: () => (
-            <IconButton onPress={() => navigation.navigate("TrackWriter")} icon="plus" />
+            <IconButton
+              onPress={() => navigation.navigate('TrackWriter')}
+              icon="plus"
+            />
           ),
         }}
       />
