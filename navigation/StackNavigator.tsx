@@ -3,10 +3,18 @@ import DrawerNavigator from './DrawerNavigator';
 import FlashcardWriterScreen from '../Screens/FlashcardWriter/FlashcardWriter';
 import TrackWriterScreen from '../Screens/TrackWriter/TrackWriter';
 import PracticeScreen from '../Screens/Practice/Practice';
+import { FC } from 'react';
+import FlashcardDetailsScreen from '../Screens/FlashcardDetails/FlashcardDetails';
 
-const RootStack = createStackNavigator();
+export type RootStackParamList = Record<string, object | undefined>;
 
-const StackNavigator = () => {
+const RootStack = createStackNavigator<RootStackParamList>();
+
+/**
+ * StackNavigator is the top-level navigator for the app. It contains
+ * the DrawerNavigator and the modal screens.
+ */
+const StackNavigator: FC = () => {
   return (
     <RootStack.Navigator>
       <RootStack.Screen
@@ -15,6 +23,11 @@ const StackNavigator = () => {
         options={{ headerShown: false }}
       />
       <RootStack.Group screenOptions={{ presentation: 'modal' }}>
+        <RootStack.Screen
+          name="FlashcardSetDetails"
+          component={FlashcardDetailsScreen}
+          options={{ presentation: 'card' }}
+        />
         <RootStack.Screen
           name="FlashcardWriter"
           component={FlashcardWriterScreen}
