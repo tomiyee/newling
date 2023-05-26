@@ -1,4 +1,4 @@
-import { atom, selector } from 'recoil';
+import { atom, selectorFamily } from 'recoil';
 
 export type Flashcard = [string, string, ...string[]];
 
@@ -42,15 +42,15 @@ export const flashcardSetsAtom = atom<FlashcardSet[]>({
   ],
 });
 
-export const currentFlashcardSetIdAtom = atom<FlashcardSetID>({
-  key: 'currentFlashcardSetId',
-  default: '1',
-});
-
-export const currentFlashcardSetSelector = selector({
-  key: 'currentFlashcardSet',
-  get: ({ get }) =>
-    get(flashcardSetsAtom).find(
-      (fset) => fset.id === get(currentFlashcardSetIdAtom)
-    ),
+export const flashcardSetSelector = selectorFamily<
+  FlashcardSet | undefined,
+  FlashcardSetID
+>({
+  key: 'flashcardSetSelector',
+  get:
+    (id) =>
+    ({ get }) => {
+      const flashcardSets = get(flashcardSetsAtom);
+      return flashcardSets.find((flashcardSet) => flashcardSet.id === id);
+    },
 });

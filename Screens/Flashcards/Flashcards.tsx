@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import {
   FlatList,
   StyleSheet,
@@ -6,12 +6,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
-import {
-  currentFlashcardSetIdAtom,
-  FlashcardSet,
-  flashcardSetsAtom,
-} from '../../recoil/flashcards';
+import { useRecoilValue } from 'recoil';
+import { FlashcardSet, flashcardSetsAtom } from '../../recoil/flashcards';
+import { NavigationProp } from '@react-navigation/native';
+import { RootStackParamList } from '../../navigation/StackNavigator';
 
 type FlashcardItemProps = {
   flashcardSet: FlashcardSet;
@@ -26,9 +24,10 @@ const FlashcardItem = ({ flashcardSet, onPress }: FlashcardItemProps) => {
   );
 };
 
-const FlashcardsScreen = ({ navigation }) => {
+const FlashcardsScreen: FC<{
+  navigation: NavigationProp<RootStackParamList>;
+}> = ({ navigation }) => {
   const flashcardSets = useRecoilValue(flashcardSetsAtom);
-  const setCurrentFlashcardSetID = useSetRecoilState(currentFlashcardSetIdAtom);
 
   return (
     <View>
@@ -36,11 +35,12 @@ const FlashcardsScreen = ({ navigation }) => {
         data={flashcardSets}
         renderItem={({ item }) => (
           <FlashcardItem
-            onPress={() => {
-              setCurrentFlashcardSetID(item.id);
-              navigation.navigate('Practice');
-            }}
             flashcardSet={item}
+            onPress={() => {
+              navigation.navigate('FlashcardSetDetails', {
+                flashcardSetId: item.id,
+              });
+            }}
           />
         )}
         keyExtractor={(item) => item.id}
