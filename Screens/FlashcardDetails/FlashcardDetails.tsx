@@ -1,7 +1,7 @@
-import { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { FlashcardSetID, flashcardSetSelector } from '../../recoil/flashcards';
-import { Button, DataTable } from 'react-native-paper';
+import { Button, DataTable, Menu } from 'react-native-paper';
 import { useRecoilValue } from 'recoil';
 import { NavigationProp } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigation/StackNavigator';
@@ -16,16 +16,22 @@ const FlashcardDetailsScreen: FC<{
 }> = ({ navigation, route }) => {
   const { flashcardSetId } = route.params;
   const flashcardSet = useRecoilValue(flashcardSetSelector(flashcardSetId));
+
   const flashcards = flashcardSet?.flashcards ?? [];
   const columnNames = flashcardSet?.columnNames ?? [];
-  // const flashcardSetName = flashcardSet?.name ?? '';
+  const flashcardSetName = flashcardSet?.name ?? '';
 
-  // useEffect(() => {
-  //   navigation.setOptions({ title: flashcardSetName });
-  // }, [navigation, flashcardSetName]);
+  useEffect(() => {
+    navigation.setOptions({ title: `${flashcardSetName} Details` });
+  }, [navigation, flashcardSetName]);
 
   const startPractice = () =>
-    navigation.navigate('Practice', { flashcardSetId, defaultSide: 0 });
+    navigation.navigate('Practice', { flashcardSetId, defaultSide });
+
+  const [visible, setVisible] = useState(true);
+  const openMenu = () => setVisible(true);
+  const closeMenu = () => setVisible(false);
+  const [defaultSide, setDefaultSide] = useState(0);
 
   return (
     <View style={styles.container}>
@@ -43,10 +49,37 @@ const FlashcardDetailsScreen: FC<{
           </DataTable.Row>
         ))}
       </DataTable>
-
-      <Button mode="contained" onPress={startPractice} style={{ flexGrow: 0 }}>
-        Practice
-      </Button>
+      <View style={{ flex: 0, gap: 5 }}>
+        <View style={{ flexGrow: 0 }}>
+          <Menu
+            visible={visible}
+            onDismiss={closeMenu}
+            anchor={
+              <Button mode="outlined" onPress={openMenu}>
+                {`Show First: ${columnNames[defaultSide]}`}
+              </Button>
+            }
+          >
+            {columnNames.map((columnName, i) => (
+              <Menu.Item
+                key={columnName}
+                onPress={() => {
+                  closeMenu();
+                  setDefaultSide(i);
+                }}
+                title={columnName}
+              />
+            ))}
+          </Menu>
+        </View>
+        <Button
+          mode="contained"
+          onPress={startPractice}
+          style={{ flexGrow: 0 }}
+        >
+          Practice Drawing
+        </Button>
+      </View>
     </View>
   );
 };
