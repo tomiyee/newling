@@ -4,13 +4,13 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import { FlashcardSetID, flashcardSetSelector } from '../../recoil/flashcards';
+import { FlashcardSetID, flashcardSetSelector } from '../recoil/flashcards';
 import { useRecoilValue } from 'recoil';
 import React, { FC, useEffect, useState } from 'react';
 import _ from 'lodash';
 import { IconButton, Text, Card } from 'react-native-paper';
 import { NavigationProp } from '@react-navigation/native';
-import { RootStackParamList } from '../../navigation/StackNavigator';
+import { RootStackParamList } from '../navigation/StackNavigator';
 import Svg, { Path } from 'react-native-svg';
 
 type PracticeScreenProps = {

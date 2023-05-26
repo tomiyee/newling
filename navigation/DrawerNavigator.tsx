@@ -1,5 +1,5 @@
-import FlashcardsScreen from '../Screens/Flashcards/Flashcards';
-import TracksScreen from '../Screens/Tracks/Tracks';
+import FlashcardsScreen from '../Screens/Flashcards';
+import TracksScreen from '../Screens/Tracks';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { IconButton } from 'react-native-paper';
 

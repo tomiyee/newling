@@ -1,10 +1,10 @@
 import React, { FC, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { FlashcardSetID, flashcardSetSelector } from '../../recoil/flashcards';
+import { FlashcardSetID, flashcardSetSelector } from '../recoil/flashcards';
 import { Button, DataTable, Menu } from 'react-native-paper';
 import { useRecoilValue } from 'recoil';
 import { NavigationProp } from '@react-navigation/native';
-import { RootStackParamList } from '../../navigation/StackNavigator';
+import { RootStackParamList } from '../navigation/StackNavigator';
 
 type FlashcardDetailsScreenProps = {
   flashcardSetId: FlashcardSetID;
