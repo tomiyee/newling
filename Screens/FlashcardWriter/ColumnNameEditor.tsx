@@ -1,12 +1,9 @@
 import { View } from 'react-native';
 import { Card, IconButton, TextInput } from 'react-native-paper';
-import {
-  Flashcard,
-  FlashcardSet,
-  wipFlashcardSet,
-} from '../../recoil/flashcards';
+import { Flashcard, FlashcardSet } from '../../recoil/flashcards';
 import { useRecoilCallback, useRecoilState } from 'recoil';
 import _ from 'lodash';
+import { wipFlashcardSet } from '../../recoil/flashcardWriter';
 
 /**
  * Renders a card with all the relevent behavior for updaitng the names of the columns

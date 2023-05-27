@@ -8,11 +8,13 @@ import {
   Flashcard,
   FlashcardSet,
   flashcardSetsAtom,
-  validWipFlashcardSet,
-  wipFlashcardSet,
 } from '../../recoil/flashcards';
 import { RootStackParamList } from '../../navigation/StackNavigator';
 import { NavigationProp } from '@react-navigation/native';
+import {
+  wipFlashcardSet,
+  validWipFlashcardSet,
+} from '../../recoil/flashcardWriter';
 
 const FlashcardWriterFooter: FC<{
   navigation: NavigationProp<RootStackParamList>;

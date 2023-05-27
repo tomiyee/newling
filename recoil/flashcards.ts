@@ -1,4 +1,5 @@
-import { atom, selector, selectorFamily } from 'recoil';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { selector, selectorFamily } from 'recoil';
 
 export type Flashcard = [string, string, ...string[]];
 
@@ -11,35 +12,28 @@ export type FlashcardSet = {
   flashcards: Flashcard[];
 };
 
-const exampleFlashcardSet1: Flashcard[] = [
-  ['是', 'shì', 'is, are, am, yes to be'],
-  ['不', 'bù', '(negative prefix) no, not'],
-  ['了', 'le/liǎo', 'to know, to understand'],
-  ['人', 'rén', 'man, person, people'],
-];
-const exampleFlashcardSet2: Flashcard[] = [
-  ['我', 'wǒ', 'I, me, myself'],
-  ['在', 'zài', '(located) at, in, exist'],
-  ['有', 'yǒu', 'to have, there is, there are, to exist, to be'],
-  ['他', 'tā', 'he, him'],
-];
-
-export const flashcardSetsAtom = atom<FlashcardSet[]>({
+export const flashcardSetsAtom = selector<FlashcardSet[]>({
   key: 'flashcardSet',
-  default: [
-    {
-      id: '1',
-      name: 'Unit 1 Flashcards',
-      columnNames: ['Characters', 'Pīnyīn', 'English'],
-      flashcards: exampleFlashcardSet1,
-    },
-    {
-      id: '2',
-      name: 'Unit 2 Flashcards',
-      columnNames: ['Characters', 'Pīnyīn', 'English'],
-      flashcards: exampleFlashcardSet2,
-    },
-  ],
+  get: async () => {
+    let value: string | null;
+    try {
+      value = await AsyncStorage.getItem('@flashcard_sets');
+    } catch (e) {
+      console.log('Error', e);
+    }
+    console.log(value);
+    if (value === null) {
+      return [] as FlashcardSet[];
+    }
+    return JSON.parse(value);
+  },
+  set: () => (value: FlashcardSet[]) => {
+    try {
+      AsyncStorage.setItem('@flashcard_sets', JSON.stringify(value));
+    } catch (e) {
+      console.log('Error', e);
+    }
+  },
 });
 
 export const flashcardSetSelector = selectorFamily<
@@ -53,29 +47,4 @@ export const flashcardSetSelector = selectorFamily<
       const flashcardSets = get(flashcardSetsAtom);
       return flashcardSets.find((flashcardSet) => flashcardSet.id === id);
     },
-});
-
-export const emptyFlashcardSet = (): FlashcardSet => {
-  return {
-    name: '',
-    id: null,
-    columnNames: ['Side 1', 'Side 2'],
-    flashcards: [['', '']],
-  };
-};
-
-export const wipFlashcardSet = atom<FlashcardSet>({
-  key: 'wipFlashcardSet',
-  default: emptyFlashcardSet(),
-});
-
-export const validWipFlashcardSet = selector<boolean>({
-  key: 'wipFlashcardSetValid',
-  get: ({ get }) => {
-    const wipFlashcardSetState = get(wipFlashcardSet);
-    return (
-      wipFlashcardSetState.name.length > 0 &&
-      wipFlashcardSetState.flashcards.length > 0
-    );
-  },
 });

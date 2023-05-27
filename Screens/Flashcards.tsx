@@ -4,15 +4,13 @@ import { flashcardSetsAtom } from '../recoil/flashcards';
 import { NavigationProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/StackNavigator';
 import { List } from 'react-native-paper';
-import { Store, useLocalStorageRecoilState } from '../utils/LocalStorage';
+import { useRecoilValue } from 'recoil';
 
 const FlashcardsScreen: FC<{
   navigation: NavigationProp<RootStackParamList>;
 }> = ({ navigation }) => {
-  const [flashcardSets] = useLocalStorageRecoilState(
-    Store.FLASHCARD_SETS,
-    flashcardSetsAtom
-  );
+  const flashcardSets = useRecoilValue(flashcardSetsAtom);
+  console.log('FlashcardsScreen: ', flashcardSets);
   return (
     <View>
       {flashcardSets.map((flashcardSet) => (

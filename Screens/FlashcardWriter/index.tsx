@@ -2,9 +2,7 @@ import { StyleSheet, View, ScrollView } from 'react-native';
 import {
   FlashcardSet,
   FlashcardSetID,
-  emptyFlashcardSet,
   flashcardSetSelector,
-  wipFlashcardSet,
 } from '../../recoil/flashcards';
 import { NavigationProp } from '@react-navigation/native';
 import React, { FC, useEffect } from 'react';
@@ -14,6 +12,10 @@ import { Card, Divider, TextInput, IconButton } from 'react-native-paper';
 import ColumnNameEditor from './ColumnNameEditor';
 import _ from 'lodash';
 import FlashcardWriterFooter from './FlashcardWriterFooter';
+import {
+  emptyFlashcardSet,
+  wipFlashcardSet,
+} from '../../recoil/flashcardWriter';
 type FlashcardWriterScreenProps = {
   flashcardSetId?: FlashcardSetID;
 };
