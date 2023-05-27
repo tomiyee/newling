@@ -1,15 +1,22 @@
+import uuid from 'react-native-uuid';
 import _ from 'lodash';
-import React from 'react';
+import React, { FC } from 'react';
 import { View } from 'react-native';
 import { Button } from 'react-native-paper';
-import { useRecoilCallback } from 'recoil';
+import { useRecoilCallback, useRecoilValue } from 'recoil';
 import {
   Flashcard,
   FlashcardSet,
+  flashcardSetsAtom,
+  validWipFlashcardSet,
   wipFlashcardSet,
 } from '../../recoil/flashcards';
+import { RootStackParamList } from '../../navigation/StackNavigator';
+import { NavigationProp } from '@react-navigation/native';
 
-const FlashcardWriterFooter = () => {
+const FlashcardWriterFooter: FC<{
+  navigation: NavigationProp<RootStackParamList>;
+}> = ({ navigation }) => {
   const addFlashcard = useRecoilCallback(({ snapshot, set }) => () => {
     const workingFlashcardSet: FlashcardSet =
       snapshot.getLoadable(wipFlashcardSet).contents;
@@ -21,21 +28,37 @@ const FlashcardWriterFooter = () => {
     set(wipFlashcardSet, newState);
   });
 
+  const validWorkingFlashcardSet = useRecoilValue(validWipFlashcardSet);
+
+  const saveFlashcardSet = useRecoilCallback(({ snapshot, set }) => () => {
+    if (!validWorkingFlashcardSet) return;
+    const workingFlashcardSet: FlashcardSet =
+      snapshot.getLoadable(wipFlashcardSet).contents;
+    workingFlashcardSet.id = uuid.v4() as string;
+    set(flashcardSetsAtom, (old) => [...old, workingFlashcardSet]);
+    navigation.goBack();
+  });
+
   return (
-    <View style={{ flex: 1, gap: 8 }}>
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Button icon="plus" onPress={addFlashcard} style={{ flex: 2 }}>
-          Add Card
-        </Button>
-      </View>
-      <View style={{ display: 'flex', flexDirection: 'row', gap: 8 }}>
-        <Button mode="outlined" onPress={addFlashcard} style={{ flex: 1 }}>
-          Cancel
-        </Button>
-        <Button mode="contained" onPress={addFlashcard} style={{ flex: 1 }}>
-          Save
-        </Button>
-      </View>
+    <View
+      style={{ display: 'flex', flexDirection: 'row', gap: 8, marginTop: 8 }}
+    >
+      <Button
+        icon="plus"
+        mode="contained"
+        onPress={addFlashcard}
+        style={{ flex: 1 }}
+      >
+        Add Card
+      </Button>
+      <Button
+        mode="contained"
+        onPress={saveFlashcardSet}
+        style={{ flex: 1 }}
+        disabled={!validWorkingFlashcardSet}
+      >
+        Save Flashcards
+      </Button>
     </View>
   );
 };

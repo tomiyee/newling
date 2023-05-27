@@ -1,7 +1,11 @@
 import { View } from 'react-native';
 import { Card, IconButton, TextInput } from 'react-native-paper';
-import { Flashcard, wipFlashcardSet } from '../../recoil/flashcards';
-import { useRecoilState } from 'recoil';
+import {
+  Flashcard,
+  FlashcardSet,
+  wipFlashcardSet,
+} from '../../recoil/flashcards';
+import { useRecoilCallback, useRecoilState } from 'recoil';
 import _ from 'lodash';
 
 /**
@@ -11,18 +15,34 @@ const ColumnNameEditor = () => {
   const [workingFlashcardSet, setWorkingFlashcardSet] =
     useRecoilState(wipFlashcardSet);
 
-  const addColumn = () =>
-    setWorkingFlashcardSet((old) => {
-      const columnNames = [
-        ...old.columnNames,
-        `Side ${old.columnNames.length + 1}`,
-      ];
-      const flashcards: Flashcard[] = old.flashcards.map((flashcard) => [
-        ...flashcard,
-        '',
-      ]);
-      return { ...old, columnNames, flashcards };
-    });
+  const addColumn = useRecoilCallback(({ snapshot, set }) => () => {
+    const oldState: FlashcardSet =
+      snapshot.getLoadable(wipFlashcardSet).contents;
+    const newState = _.cloneDeep(oldState);
+    newState.columnNames.push(`Side ${oldState.columnNames.length + 1}`);
+    newState.flashcards = newState.flashcards.map((flashcard) => [
+      ...flashcard,
+      '',
+    ]);
+    set(wipFlashcardSet, newState);
+  });
+
+  const deleteColumn = useRecoilCallback(
+    ({ snapshot, set }) =>
+      (columnIndex: number) => {
+        const oldState: FlashcardSet =
+          snapshot.getLoadable(wipFlashcardSet).contents;
+        const newState = _.cloneDeep(oldState);
+        newState.columnNames = newState.columnNames.filter(
+          (e, i) => i !== columnIndex
+        );
+        newState.flashcards = newState.flashcards.map(
+          (flashcard) =>
+            flashcard.filter((e, i) => i !== columnIndex) as Flashcard
+        );
+        set(wipFlashcardSet, newState);
+      }
+  );
 
   const updateColumnName = (text: string, columnIndex: number) => {
     setWorkingFlashcardSet((old) => {
@@ -31,20 +51,30 @@ const ColumnNameEditor = () => {
       return newState;
     });
   };
+
   return (
     <Card style={{ width: '100%' }}>
       <Card.Title title="Flashcard Side Labels" />
       <Card.Content>
         {workingFlashcardSet.columnNames.map((columnName, columnIndex) => (
-          <View key={`column-name-${columnIndex}`} style={{ marginBottom: 8 }}>
+          <View
+            key={`column-name-${columnIndex}`}
+            style={{ display: 'flex', flexDirection: 'row', marginBottom: 8 }}
+          >
             <TextInput
-              style={{ width: '100%' }}
+              style={{ flex: 1, width: '100%' }}
               label={`Column ${columnIndex + 1} Name`}
               mode="outlined"
               value={columnName}
               onChangeText={(text) => updateColumnName(text, columnIndex)}
-              right={<IconButton icon="minus" />}
             />
+            {workingFlashcardSet.columnNames.length > 1 && (
+              <IconButton
+                style={{ flex: 0 }}
+                icon="trash-can"
+                onPress={() => deleteColumn(columnIndex)}
+              />
+            )}
           </View>
         ))}
         <IconButton mode="contained" icon="plus" onPress={addColumn} />

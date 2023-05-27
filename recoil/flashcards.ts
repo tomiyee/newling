@@ -1,4 +1,4 @@
-import { atom, selectorFamily } from 'recoil';
+import { atom, selector, selectorFamily } from 'recoil';
 
 export type Flashcard = [string, string, ...string[]];
 
@@ -60,11 +60,22 @@ export const emptyFlashcardSet = (): FlashcardSet => {
     name: '',
     id: null,
     columnNames: ['Side 1', 'Side 2'],
-    flashcards: [],
+    flashcards: [['', '']],
   };
 };
 
 export const wipFlashcardSet = atom<FlashcardSet>({
   key: 'wipFlashcardSet',
   default: emptyFlashcardSet(),
+});
+
+export const validWipFlashcardSet = selector<boolean>({
+  key: 'wipFlashcardSetValid',
+  get: ({ get }) => {
+    const wipFlashcardSetState = get(wipFlashcardSet);
+    return (
+      wipFlashcardSetState.name.length > 0 &&
+      wipFlashcardSetState.flashcards.length > 0
+    );
+  },
 });
