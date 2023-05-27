@@ -14,7 +14,7 @@ const DrawerNavigator = ({ navigation }) => {
         options={{
           headerRight: () => (
             <IconButton
-              onPress={() => navigation.navigate('FlashcardWriter')}
+              onPress={() => navigation.navigate('FlashcardWriter', {})}
               icon="plus"
             />
           ),

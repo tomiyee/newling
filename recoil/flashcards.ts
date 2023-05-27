@@ -59,7 +59,7 @@ export const emptyFlashcardSet = (): FlashcardSet => {
   return {
     name: '',
     id: null,
-    columnNames: [],
+    columnNames: ['Side 1', 'Side 2'],
     flashcards: [],
   };
 };
