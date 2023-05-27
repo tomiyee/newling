@@ -54,3 +54,17 @@ export const flashcardSetSelector = selectorFamily<
       return flashcardSets.find((flashcardSet) => flashcardSet.id === id);
     },
 });
+
+export const emptyFlashcardSet = (): FlashcardSet => {
+  return {
+    name: '',
+    id: null,
+    columnNames: [],
+    flashcards: [],
+  };
+};
+
+export const wipFlashcardSet = atom<FlashcardSet>({
+  key: 'wipFlashcardSet',
+  default: emptyFlashcardSet(),
+});

@@ -31,6 +31,7 @@ const StackNavigator: FC = () => {
         <RootStack.Screen
           name="FlashcardWriter"
           component={FlashcardWriterScreen}
+          options={{ title: 'FlashcardWriter' }}
         />
         <RootStack.Screen name="TrackWriter" component={TrackWriterScreen} />
         <RootStack.Screen name="Practice" component={PracticeScreen} />

@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { FlashcardSetID, flashcardSetSelector } from '../recoil/flashcards';
-import { Button, DataTable, Menu } from 'react-native-paper';
+import { Button, DataTable, IconButton, Menu } from 'react-native-paper';
 import { useRecoilValue } from 'recoil';
 import { NavigationProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/StackNavigator';
@@ -22,8 +22,18 @@ const FlashcardDetailsScreen: FC<{
   const flashcardSetName = flashcardSet?.name ?? '';
 
   useEffect(() => {
-    navigation.setOptions({ title: `${flashcardSetName} Details` });
-  }, [navigation, flashcardSetName]);
+    navigation.setOptions({
+      title: `${flashcardSetName} Details`,
+      headerRight: () => (
+        <IconButton
+          onPress={() =>
+            navigation.navigate('FlashcardWriter', { flashcardSetId })
+          }
+          icon="pencil"
+        />
+      ),
+    });
+  }, [navigation, flashcardSetName, flashcardSetId]);
 
   const startPractice = () =>
     navigation.navigate('Practice', { flashcardSetId, defaultSide });
