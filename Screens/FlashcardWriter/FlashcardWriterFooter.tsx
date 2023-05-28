@@ -36,8 +36,14 @@ const FlashcardWriterFooter: FC<{
     if (!validWorkingFlashcardSet) return;
     const workingFlashcardSet: FlashcardSet =
       snapshot.getLoadable(wipFlashcardSet).contents;
-    workingFlashcardSet.id = uuid.v4() as string;
-    set(flashcardSetsAtom, (old) => [...old, workingFlashcardSet]);
+    if (workingFlashcardSet.id === null)
+      workingFlashcardSet.id = uuid.v4() as string;
+    set(flashcardSetsAtom, (old) => [
+      ...old.filter(
+        (flashcardSet) => flashcardSet.id !== workingFlashcardSet.id
+      ),
+      workingFlashcardSet,
+    ]);
     navigation.goBack();
   });
 

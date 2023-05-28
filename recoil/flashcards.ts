@@ -1,5 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { selector, selectorFamily } from 'recoil';
+import { atom, selectorFamily } from 'recoil';
 
 export type Flashcard = [string, string, ...string[]];
 
@@ -12,28 +11,9 @@ export type FlashcardSet = {
   flashcards: Flashcard[];
 };
 
-export const flashcardSetsAtom = selector<FlashcardSet[]>({
-  key: 'flashcardSet',
-  get: async () => {
-    let value: string | null;
-    try {
-      value = await AsyncStorage.getItem('@flashcard_sets');
-    } catch (e) {
-      console.log('Error', e);
-    }
-    console.log(value);
-    if (value === null) {
-      return [] as FlashcardSet[];
-    }
-    return JSON.parse(value);
-  },
-  set: () => (value: FlashcardSet[]) => {
-    try {
-      AsyncStorage.setItem('@flashcard_sets', JSON.stringify(value));
-    } catch (e) {
-      console.log('Error', e);
-    }
-  },
+export const flashcardSetsAtom = atom<FlashcardSet[]>({
+  key: 'flashcardSetAtom',
+  default: undefined,
 });
 
 export const flashcardSetSelector = selectorFamily<

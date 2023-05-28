@@ -7,7 +7,7 @@ import {
 import { NavigationProp } from '@react-navigation/native';
 import React, { FC, useEffect } from 'react';
 import { RootStackParamList } from '../../navigation/StackNavigator';
-import { useRecoilCallback, useRecoilState } from 'recoil';
+import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { Card, Divider, TextInput, IconButton } from 'react-native-paper';
 import ColumnNameEditor from './ColumnNameEditor';
 import _ from 'lodash';
@@ -16,17 +16,24 @@ import {
   emptyFlashcardSet,
   wipFlashcardSet,
 } from '../../recoil/flashcardWriter';
-type FlashcardWriterScreenProps = {
+
+// The values passed by the Stack Navigator
+type FlashcardWriterScreenParams = {
   flashcardSetId?: FlashcardSetID;
 };
 
-const FlashcardWriterScreen: FC<{
-  route: { params: FlashcardWriterScreenProps };
+// The final props the
+export type FlashcardWriterScreenProps = {
+  route: { params: FlashcardWriterScreenParams };
   navigation: NavigationProp<RootStackParamList>;
-}> = ({ navigation, route }) => {
+};
+
+const FlashcardWriterScreen: FC<FlashcardWriterScreenProps> = ({
+  navigation,
+  route,
+}) => {
   const { flashcardSetId } = route.params;
-  const [workingFlashcardSet, setWorkingFlashcardSet] =
-    useRecoilState(wipFlashcardSet);
+  const workingFlashcardSet = useRecoilValue(wipFlashcardSet);
 
   const initializeWorkingFlashcardSet = useRecoilCallback(
     ({ snapshot, set }) =>
@@ -43,8 +50,15 @@ const FlashcardWriterScreen: FC<{
 
   useEffect(initializeWorkingFlashcardSet, [initializeWorkingFlashcardSet]);
 
-  const updateFlashcardSetTitle = (name: string) =>
-    setWorkingFlashcardSet((old) => ({ ...old, name }));
+  const updateFlashcardSetTitle = useRecoilCallback(
+    ({ snapshot, set }) =>
+      (name: string) => {
+        const oldValue = snapshot.getLoadable(wipFlashcardSet).contents;
+        const newValue = _.cloneDeep(oldValue);
+        newValue.name = name;
+        set(wipFlashcardSet, newValue);
+      }
+  );
 
   const updateFlashcard = useRecoilCallback(
     ({ snapshot, set }) =>
@@ -79,6 +93,7 @@ const FlashcardWriterScreen: FC<{
             mode="outlined"
             style={{ width: '100%' }}
             value={workingFlashcardSet.name}
+            // onChangeText={(text) => console.log(text)}
             onChangeText={updateFlashcardSetTitle}
           />
           <ColumnNameEditor />
