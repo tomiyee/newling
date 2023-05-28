@@ -13,7 +13,6 @@ const StorageSynchronizer = () => {
         if (flashcardSets === undefined) {
           AsyncStorage.getItem('@flashcard_sets').then(
             (value: string | null) => {
-              console.log('Initializing from value', value);
               set(flashcardSetsAtom, value === null ? [] : JSON.parse(value));
             },
             (e) => {
@@ -23,7 +22,6 @@ const StorageSynchronizer = () => {
         }
         // Update the async storage in every other update
         else {
-          console.log('Saving Changes');
           AsyncStorage.setItem(
             '@flashcard_sets',
             JSON.stringify(flashcardSets)
