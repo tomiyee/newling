@@ -28,3 +28,13 @@ export const flashcardSetSelector = selectorFamily<
       return flashcardSets.find((flashcardSet) => flashcardSet.id === id);
     },
 });
+
+export const columnNamesSelector = selectorFamily<string[], FlashcardSetID>({
+  key: 'columnNames',
+  get:
+    (id) =>
+    ({ get }) => {
+      const flashcardSet = get(flashcardSetSelector(id));
+      return flashcardSet.columnNames;
+    },
+});
