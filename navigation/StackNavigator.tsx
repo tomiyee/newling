@@ -1,10 +1,10 @@
+import React, { FC } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import DrawerNavigator from './DrawerNavigator';
-import FlashcardWriterScreen from '../Screens/FlashcardWriter';
 import TrackWriterScreen from '../Screens/TrackWriter';
 import PracticeScreen from '../Screens/Practice';
-import { FC } from 'react';
 import FlashcardDetailsScreen from '../Screens/FlashcardDetails';
+import FlashcardWriterScreen from '../Screens/FlashcardWriter';
 
 export type RootStackParamList = Record<string, object | undefined>;
 
@@ -31,6 +31,7 @@ const StackNavigator: FC = () => {
         <RootStack.Screen
           name="FlashcardWriter"
           component={FlashcardWriterScreen}
+          options={{ title: 'FlashcardWriter' }}
         />
         <RootStack.Screen name="TrackWriter" component={TrackWriterScreen} />
         <RootStack.Screen name="Practice" component={PracticeScreen} />

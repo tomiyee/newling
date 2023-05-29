@@ -11,35 +11,9 @@ export type FlashcardSet = {
   flashcards: Flashcard[];
 };
 
-const exampleFlashcardSet1: Flashcard[] = [
-  ['是', 'shì', 'is, are, am, yes to be'],
-  ['不', 'bù', '(negative prefix) no, not'],
-  ['了', 'le/liǎo', 'to know, to understand'],
-  ['人', 'rén', 'man, person, people'],
-];
-const exampleFlashcardSet2: Flashcard[] = [
-  ['我', 'wǒ', 'I, me, myself'],
-  ['在', 'zài', '(located) at, in, exist'],
-  ['有', 'yǒu', 'to have, there is, there are, to exist, to be'],
-  ['他', 'tā', 'he, him'],
-];
-
 export const flashcardSetsAtom = atom<FlashcardSet[]>({
-  key: 'flashcardSet',
-  default: [
-    {
-      id: '1',
-      name: 'Unit 1 Flashcards',
-      columnNames: ['Characters', 'Pīnyīn', 'English'],
-      flashcards: exampleFlashcardSet1,
-    },
-    {
-      id: '2',
-      name: 'Unit 2 Flashcards',
-      columnNames: ['Characters', 'Pīnyīn', 'English'],
-      flashcards: exampleFlashcardSet2,
-    },
-  ],
+  key: 'flashcardSetAtom',
+  default: undefined,
 });
 
 export const flashcardSetSelector = selectorFamily<
@@ -52,5 +26,15 @@ export const flashcardSetSelector = selectorFamily<
     ({ get }) => {
       const flashcardSets = get(flashcardSetsAtom);
       return flashcardSets.find((flashcardSet) => flashcardSet.id === id);
+    },
+});
+
+export const columnNamesSelector = selectorFamily<string[], FlashcardSetID>({
+  key: 'columnNames',
+  get:
+    (id) =>
+    ({ get }) => {
+      const flashcardSet = get(flashcardSetSelector(id));
+      return flashcardSet.columnNames;
     },
 });
