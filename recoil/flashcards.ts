@@ -35,6 +35,6 @@ export const columnNamesSelector = selectorFamily<string[], FlashcardSetID>({
     (id) =>
     ({ get }) => {
       const flashcardSet = get(flashcardSetSelector(id));
-      return flashcardSet.columnNames;
+      return flashcardSet?.columnNames ?? [];
     },
 });

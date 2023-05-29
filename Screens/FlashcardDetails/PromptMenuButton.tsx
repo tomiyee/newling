@@ -4,7 +4,7 @@ import { useRecoilValue } from 'recoil';
 import { Button, Menu } from 'react-native-paper';
 
 const PromptMenuButton = ({ flashcardSetId, defaultSide, setDefaultSide }) => {
-  const columnNames = useRecoilValue(columnNamesSelector(flashcardSetId));
+  const columnNames = useRecoilValue(columnNamesSelector(flashcardSetId)) ?? [];
 
   const [menuVisible, setMenuVisible] = useState(false);
   const closeMenu = () => setMenuVisible(false);

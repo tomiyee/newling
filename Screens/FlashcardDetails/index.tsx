@@ -18,6 +18,7 @@ import {
 import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { RootStackParamList } from '../../navigation/StackNavigator';
 import PromptMenuButton from './PromptMenuButton';
+import { emptyFlashcardSet } from '../../recoil/flashcardWriter';
 
 type FlashcardDetailsScreenProps = {
   flashcardSetId: FlashcardSetID;
@@ -28,7 +29,8 @@ const FlashcardDetailsScreen: FC<{
   navigation: NavigationProp<RootStackParamList>;
 }> = ({ navigation, route }) => {
   const { flashcardSetId } = route.params;
-  const flashcardSet = useRecoilValue(flashcardSetSelector(flashcardSetId));
+  const flashcardSet =
+    useRecoilValue(flashcardSetSelector(flashcardSetId)) ?? emptyFlashcardSet();
 
   const { flashcards, columnNames } = flashcardSet;
   const flashcardSetName = flashcardSet.name;
