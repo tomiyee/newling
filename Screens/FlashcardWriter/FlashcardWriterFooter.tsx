@@ -36,13 +36,14 @@ const FlashcardWriterFooter: FC<{
     if (!validWorkingFlashcardSet) return;
     const workingFlashcardSet: FlashcardSet =
       snapshot.getLoadable(wipFlashcardSet).contents;
-    if (workingFlashcardSet.id === null)
-      workingFlashcardSet.id = uuid.v4() as string;
+    const finishedFlashcardSet = _.cloneDeep(workingFlashcardSet);
+    if (finishedFlashcardSet.id === null)
+      finishedFlashcardSet.id = uuid.v4() as string;
     const oldState: FlashcardSet[] =
       snapshot.getLoadable(flashcardSetsAtom).contents ?? [];
     const newState = [
-      ...oldState.filter((fSet) => fSet.id !== workingFlashcardSet.id),
-      _.cloneDeep(workingFlashcardSet),
+      ...oldState.filter((fSet) => fSet.id !== finishedFlashcardSet.id),
+      finishedFlashcardSet,
     ];
     set(flashcardSetsAtom, newState);
     navigation.goBack();

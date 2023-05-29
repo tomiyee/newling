@@ -93,7 +93,6 @@ const FlashcardWriterScreen: FC<FlashcardWriterScreenProps> = ({
             mode="outlined"
             style={{ width: '100%' }}
             value={workingFlashcardSet.name}
-            // onChangeText={(text) => console.log(text)}
             onChangeText={updateFlashcardSetTitle}
           />
           <ColumnNameEditor />
