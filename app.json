@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "newling",
+    "name": "Newling",
     "slug": "newling",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -14,15 +14,28 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "plugins": [
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
+          "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos.",
+          "isAccessMediaLocationEnabled": true
+        }
+      ]
+    ], 
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tomiyee.newling",
+      "buildNumber": "1.0.0"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.tomiyee.newling"
+      "package": "com.tomiyee.newling",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -31,6 +44,12 @@
       "eas": {
         "projectId": "ffff6a20-e093-429b-91d8-b7fc4b17b93a"
       }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/ffff6a20-e093-429b-91d8-b7fc4b17b93a"
     }
   }
 }

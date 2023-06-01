@@ -1,5 +1,6 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { jsonToCSV } from 'react-native-csv';
 import {
   Button,
   DataTable,
@@ -8,7 +9,10 @@ import {
   Portal,
   Text,
 } from 'react-native-paper';
+import * as FileSystem from 'expo-file-system';
+import * as MediaLibrary from 'expo-media-library';
 import { NavigationProp } from '@react-navigation/native';
+import RNFS from 'react-native-fs';
 import {
   FlashcardSet,
   FlashcardSetID,
@@ -62,17 +66,73 @@ const FlashcardDetailsScreen: FC<{
     [navigation]
   );
 
+  const downloadFlashcardSet = useRecoilCallback(
+    ({ snapshot, set }) =>
+      async () => {        
+        const perm = await MediaLibrary.requestPermissionsAsync();
+        console.log(perm.status);
+        if (perm.status !== MediaLibrary.PermissionStatus.GRANTED) return;
+      
+        const activeFlashcardSet: FlashcardSet = snapshot.getLoadable(
+          flashcardSetSelector(flashcardSetId)
+        ).contents;
+        const flashcardSetJson = activeFlashcardSet.flashcards.map(
+          (flashcardSides) => {
+            const rowData = {};
+            activeFlashcardSet.columnNames.forEach(
+              (colName, colIdx) => (rowData[colName] = flashcardSides[colIdx])
+            );
+            return rowData;
+          }
+        );
+        const jsonData = JSON.stringify(flashcardSetJson);
+        const csvData = jsonToCSV(jsonData);
+        const csvUri = `file://${activeFlashcardSet.name.replaceAll(' ', '_')}.csv`;
+        console.log(csvUri)
+        try{
+          RNFS.writeFile(csvUri, 'Sample text file content.', 'utf8')
+            .then((success) => {
+              console.log('FILE WRITTEN!', `File path: ${csvUri}`);
+            })
+            .catch((err) => {
+              console.log(err.message);
+            });
+        } catch(e) {
+          console.error(e);
+        }
+        try {
+          const asset = await MediaLibrary.createAssetAsync(csvUri);
+          const album = await MediaLibrary.getAlbumAsync('Download');
+          if (album === null) {
+            await MediaLibrary.createAlbumAsync('Download', asset, false);
+          } else {
+            await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      },
+    [flashcardSetId]
+  );
+
   useEffect(() => {
     navigation.setOptions({
       title: `${flashcardSetName} Details`,
       headerRight: () => (
         <View style={{ flexDirection: 'row', flex: 1 }}>
+          <IconButton onPress={downloadFlashcardSet} icon="download" />
           <IconButton onPress={() => setVisibleDelete(true)} icon="trash-can" />
           <IconButton onPress={editFlashcardSet} icon="pencil" />
         </View>
       ),
     });
-  }, [navigation, flashcardSetName, flashcardSetId, editFlashcardSet]);
+  }, [
+    navigation,
+    flashcardSetName,
+    flashcardSetId,
+    editFlashcardSet,
+    downloadFlashcardSet,
+  ]);
 
   return (
     <View style={styles.container}>
