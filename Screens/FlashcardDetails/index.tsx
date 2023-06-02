@@ -1,6 +1,5 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { jsonToCSV } from 'react-native-csv';
+import { Alert, StyleSheet, View } from 'react-native';
 import {
   Button,
   DataTable,
@@ -10,13 +9,13 @@ import {
   Text,
 } from 'react-native-paper';
 import * as FileSystem from 'expo-file-system';
-import * as MediaLibrary from 'expo-media-library';
+import * as Sharing from 'expo-sharing';
 import { NavigationProp } from '@react-navigation/native';
-import RNFS from 'react-native-fs';
 import {
   FlashcardSet,
   FlashcardSetID,
   flashcardSetSelector,
+  flashcardSetToCsv,
   flashcardSetsAtom,
 } from '../../recoil/flashcards';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
@@ -32,6 +31,7 @@ const FlashcardDetailsScreen: FC<{
   route: { params: FlashcardDetailsScreenProps };
   navigation: NavigationProp<RootStackParamList>;
 }> = ({ navigation, route }) => {
+  console.log('Loaded Flashcard Details Screen');
   const { flashcardSetId } = route.params;
   const flashcardSet =
     useRecoilValue(flashcardSetSelector(flashcardSetId)) ?? emptyFlashcardSet();
@@ -66,54 +66,23 @@ const FlashcardDetailsScreen: FC<{
     [navigation]
   );
 
-  const downloadFlashcardSet = useRecoilCallback(
-    ({ snapshot, set }) =>
-      async () => {        
-        const perm = await MediaLibrary.requestPermissionsAsync();
-        console.log(perm.status);
-        if (perm.status !== MediaLibrary.PermissionStatus.GRANTED) return;
-      
-        const activeFlashcardSet: FlashcardSet = snapshot.getLoadable(
-          flashcardSetSelector(flashcardSetId)
-        ).contents;
-        const flashcardSetJson = activeFlashcardSet.flashcards.map(
-          (flashcardSides) => {
-            const rowData = {};
-            activeFlashcardSet.columnNames.forEach(
-              (colName, colIdx) => (rowData[colName] = flashcardSides[colIdx])
-            );
-            return rowData;
-          }
-        );
-        const jsonData = JSON.stringify(flashcardSetJson);
-        const csvData = jsonToCSV(jsonData);
-        const csvUri = `file://${activeFlashcardSet.name.replaceAll(' ', '_')}.csv`;
-        console.log(csvUri)
-        try{
-          RNFS.writeFile(csvUri, 'Sample text file content.', 'utf8')
-            .then((success) => {
-              console.log('FILE WRITTEN!', `File path: ${csvUri}`);
-            })
-            .catch((err) => {
-              console.log(err.message);
-            });
-        } catch(e) {
-          console.error(e);
-        }
-        try {
-          const asset = await MediaLibrary.createAssetAsync(csvUri);
-          const album = await MediaLibrary.getAlbumAsync('Download');
-          if (album === null) {
-            await MediaLibrary.createAlbumAsync('Download', asset, false);
-          } else {
-            await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
-          }
-        } catch (e) {
-          console.error(e);
-        }
-      },
-    [flashcardSetId]
-  );
+  const downloadFlashcardSet = useCallback(async () => {
+    const canShare = await Sharing.isAvailableAsync();
+    if (!canShare)
+      Alert.alert('The Sharing API is not available on this device.');
+    const csvData = flashcardSetToCsv(flashcardSet);
+    const fileName = `${flashcardSet.name.replaceAll(' ', '_')}.csv`;
+    const temporaryFilePath = FileSystem.documentDirectory + fileName;
+
+    // Create the file
+    await FileSystem.writeAsStringAsync(temporaryFilePath, csvData);
+
+    // Prompt the user to save the file
+    await Sharing.shareAsync(temporaryFilePath);
+
+    // Delete the temporary file
+    await FileSystem.deleteAsync(temporaryFilePath);
+  }, [flashcardSet]);
 
   useEffect(() => {
     navigation.setOptions({
