@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 import {
   Button,
   DataTable,
@@ -8,11 +8,14 @@ import {
   Portal,
   Text,
 } from 'react-native-paper';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 import { NavigationProp } from '@react-navigation/native';
 import {
   FlashcardSet,
   FlashcardSetID,
   flashcardSetSelector,
+  flashcardSetToCsv,
   flashcardSetsAtom,
 } from '../../recoil/flashcards';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
@@ -28,6 +31,7 @@ const FlashcardDetailsScreen: FC<{
   route: { params: FlashcardDetailsScreenProps };
   navigation: NavigationProp<RootStackParamList>;
 }> = ({ navigation, route }) => {
+  console.log('Loaded Flashcard Details Screen');
   const { flashcardSetId } = route.params;
   const flashcardSet =
     useRecoilValue(flashcardSetSelector(flashcardSetId)) ?? emptyFlashcardSet();
@@ -62,17 +66,42 @@ const FlashcardDetailsScreen: FC<{
     [navigation]
   );
 
+  const downloadFlashcardSet = useCallback(async () => {
+    const canShare = await Sharing.isAvailableAsync();
+    if (!canShare)
+      Alert.alert('The Sharing API is not available on this device.');
+    const csvData = flashcardSetToCsv(flashcardSet);
+    const fileName = `${flashcardSet.name.replaceAll(' ', '_')}.csv`;
+    const temporaryFilePath = FileSystem.documentDirectory + fileName;
+
+    // Create the file
+    await FileSystem.writeAsStringAsync(temporaryFilePath, csvData);
+
+    // Prompt the user to save the file
+    await Sharing.shareAsync(temporaryFilePath);
+
+    // Delete the temporary file
+    await FileSystem.deleteAsync(temporaryFilePath);
+  }, [flashcardSet]);
+
   useEffect(() => {
     navigation.setOptions({
       title: `${flashcardSetName} Details`,
       headerRight: () => (
         <View style={{ flexDirection: 'row', flex: 1 }}>
+          <IconButton onPress={downloadFlashcardSet} icon="download" />
           <IconButton onPress={() => setVisibleDelete(true)} icon="trash-can" />
           <IconButton onPress={editFlashcardSet} icon="pencil" />
         </View>
       ),
     });
-  }, [navigation, flashcardSetName, flashcardSetId, editFlashcardSet]);
+  }, [
+    navigation,
+    flashcardSetName,
+    flashcardSetId,
+    editFlashcardSet,
+    downloadFlashcardSet,
+  ]);
 
   return (
     <View style={styles.container}>
