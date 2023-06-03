@@ -13,9 +13,9 @@ export type FlashcardSet = {
   flashcards: Flashcard[];
 };
 
-export const flashcardSetsAtom = atom<FlashcardSet[]>({
+export const flashcardSetsAtom = atom({
   key: 'flashcardSetAtom',
-  default: undefined,
+  default: undefined as FlashcardSet[],
 });
 
 export const flashcardSetSelector = selectorFamily<

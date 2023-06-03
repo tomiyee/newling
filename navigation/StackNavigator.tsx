@@ -5,6 +5,7 @@ import TrackWriterScreen from '../Screens/TrackWriter';
 import PracticeScreen from '../Screens/Practice';
 import FlashcardDetailsScreen from '../Screens/FlashcardDetails';
 import FlashcardWriterScreen from '../Screens/FlashcardWriter';
+import FlashcardUploaderScreen from '../Screens/FlashcardsUploader';
 
 export type RootStackParamList = Record<string, object | undefined>;
 
@@ -31,7 +32,12 @@ const StackNavigator: FC = () => {
         <RootStack.Screen
           name="FlashcardWriter"
           component={FlashcardWriterScreen}
-          options={{ title: 'FlashcardWriter' }}
+          options={{ title: 'Flashcard Writer' }}
+        />
+        <RootStack.Screen
+          name="FlashcardUploader"
+          component={FlashcardUploaderScreen}
+          options={{ title: 'Flashcard Uploader' }}
         />
         <RootStack.Screen name="TrackWriter" component={TrackWriterScreen} />
         <RootStack.Screen name="Practice" component={PracticeScreen} />

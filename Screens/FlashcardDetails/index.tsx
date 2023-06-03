@@ -23,7 +23,7 @@ import { RootStackParamList } from '../../navigation/StackNavigator';
 import PromptMenuButton from './PromptMenuButton';
 import { emptyFlashcardSet } from '../../recoil/flashcardWriter';
 
-type FlashcardDetailsScreenProps = {
+export type FlashcardDetailsScreenProps = {
   flashcardSetId: FlashcardSetID;
 };
 
