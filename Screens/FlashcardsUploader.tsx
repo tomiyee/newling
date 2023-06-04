@@ -2,24 +2,40 @@ import React, { FC, useState } from 'react';
 import { View } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import { Button, TextInput } from 'react-native-paper';
-import * as FileSystem from 'expo-file-system';
+
+/**
+ * In the context of reading a CSV file, if you already
+ * have the file stored locally on the device, you can
+ * use `FileSystem.readAsStringAsync` to directly read
+ * the contents from the file system. However, if the
+ * CSV file is hosted on a server or accessible through
+ * a URL, you would typically use `fetch` to download the
+ * file's contents.
+ */
 
 const FlashcardUploaderScreen: FC = () => {
   const [flashcardSetTitle, setFlashcardSetTitle] = useState('');
 
   const pickFile = async () => {
+    let res: DocumentPicker.DocumentResult;
     try {
-      const res = await DocumentPicker.getDocumentAsync({
-        type: 'text/plain',
+      res = await DocumentPicker.getDocumentAsync({
+        type: '*/*',
+        copyToCacheDirectory: true,
       });
-
-      if (res.type === 'success') {
-        const { uri } = res;
-        const fileContent = await FileSystem.readAsStringAsync(uri);
-        console.log(fileContent);
-      }
     } catch (err) {
-      console.log('File picking error:', err);
+      console.log('Document Picking Error:', err);
+    }
+
+    if (res.type !== 'success') return;
+    const { uri } = res;
+
+    try {
+      const fileContents = await fetch(uri);
+      const csvText = await fileContents.text();
+      console.log(csvText);
+    } catch (err) {
+      console.log('File Reading Error:', err);
     }
   };
 
