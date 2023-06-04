@@ -1,6 +1,6 @@
 import { atom, selectorFamily } from 'recoil';
-import uuid from 'react-native-uuid';
 import { jsonToCSV } from 'react-native-csv';
+import Papa from 'papaparse';
 
 export type Flashcard = [string, string, ...string[]];
 
@@ -59,17 +59,36 @@ export const flashcardSetToCsv = (flashcardSet: FlashcardSet): string => {
 
 /**
  * Constructs a Flashcard Set from the given CSV data.
- * Note: The name is empty by default and needs to be populated.
+ * Note: The id and name are empty by default and needs to be populated.
  * @param csvData The contents of the CSV file
  * @returns The flashcard set
  */
 export const csvToFlashcardSet = (csvData: string): FlashcardSet => {
-  console.log('TODO, Parse CSV Data:', csvData);
-  const flashcardSet: FlashcardSet = {
+  const results = Papa.parse(csvData, {
+    header: true,
+  });
+  const emptyFlashcard: FlashcardSet = {
     name: '',
-    id: uuid.v4() as string,
+    id: null,
     columnNames: [],
     flashcards: [],
   };
-  return flashcardSet;
+
+  if (results.errors.length > 0) {
+    console.error('CSV Parsing Error:', results.errors);
+    return emptyFlashcard;
+  }
+
+  const parsedData = results.data as Record<string, string>[];
+  if (parsedData.length === 0) return emptyFlashcard;
+  const columnNames = new Array(...Object.keys(parsedData[0]));
+  const flashcards = parsedData.map(
+    (flashcard) =>
+      columnNames.map((columnName) => flashcard[columnName]) as Flashcard
+  );
+  return {
+    ...emptyFlashcard,
+    columnNames,
+    flashcards,
+  };
 };
