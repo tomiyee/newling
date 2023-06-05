@@ -1,15 +1,22 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { View } from 'react-native';
-import { flashcardSetsAtom } from '../recoil/flashcards';
+import { flashcardSetsAtom } from '../../recoil/flashcards';
 import { NavigationProp } from '@react-navigation/native';
-import { RootStackParamList } from '../navigation/StackNavigator';
+import { RootStackParamList } from '../../navigation/StackNavigator';
 import { List, Text } from 'react-native-paper';
 import { useRecoilValue } from 'recoil';
+import FlashcardsHeaderActions from './FlashcardHeaderActions';
 
 const FlashcardsScreen: FC<{
   navigation: NavigationProp<RootStackParamList>;
 }> = ({ navigation }) => {
   const flashcardSets = useRecoilValue(flashcardSetsAtom) ?? [];
+
+  useEffect(
+    () =>
+      navigation.setOptions({ headerRight: () => <FlashcardsHeaderActions /> }),
+    [navigation]
+  );
 
   return (
     <View>

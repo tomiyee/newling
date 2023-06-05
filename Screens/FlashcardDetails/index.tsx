@@ -1,13 +1,6 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
-import {
-  Button,
-  DataTable,
-  Dialog,
-  IconButton,
-  Portal,
-  Text,
-} from 'react-native-paper';
+import { Button, Dialog, IconButton, Portal, Text } from 'react-native-paper';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { NavigationProp } from '@react-navigation/native';
@@ -22,8 +15,9 @@ import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { RootStackParamList } from '../../navigation/StackNavigator';
 import PromptMenuButton from './PromptMenuButton';
 import { emptyFlashcardSet } from '../../recoil/flashcardWriter';
+import FlashcardsTable from './FlashcardsTable';
 
-type FlashcardDetailsScreenProps = {
+export type FlashcardDetailsScreenProps = {
   flashcardSetId: FlashcardSetID;
 };
 
@@ -31,7 +25,6 @@ const FlashcardDetailsScreen: FC<{
   route: { params: FlashcardDetailsScreenProps };
   navigation: NavigationProp<RootStackParamList>;
 }> = ({ navigation, route }) => {
-  console.log('Loaded Flashcard Details Screen');
   const { flashcardSetId } = route.params;
   const flashcardSet =
     useRecoilValue(flashcardSetSelector(flashcardSetId)) ?? emptyFlashcardSet();
@@ -105,20 +98,7 @@ const FlashcardDetailsScreen: FC<{
 
   return (
     <View style={styles.container}>
-      <DataTable style={{ flexGrow: 1 }}>
-        <DataTable.Header>
-          {columnNames.map((columnName) => (
-            <DataTable.Title key={columnName}>{columnName}</DataTable.Title>
-          ))}
-        </DataTable.Header>
-        {flashcards.map((flashcard, i) => (
-          <DataTable.Row key={`${flashcardSetId}-card-${i}`}>
-            {flashcard.map((sideContent) => (
-              <DataTable.Cell key={sideContent}>{sideContent}</DataTable.Cell>
-            ))}
-          </DataTable.Row>
-        ))}
-      </DataTable>
+      <FlashcardsTable flashcards={flashcards} columnNames={columnNames} />
       <View style={{ flex: 0, gap: 5 }}>
         <View style={{ flexGrow: 0 }}>
           <PromptMenuButton
